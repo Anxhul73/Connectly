@@ -7,9 +7,11 @@ const upload = require("../middlewares/upload.middleware");
 const {
     createPost, getAllPosts, getPostById, updatePost, deletePost
 } = require("../controllers/post.controller");
+const protect = require("../middlewares/auth.middleware");
 
 router.post(
     "/create-post",
+    protect,
     upload.single("image"),
     createPost
 );

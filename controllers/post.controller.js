@@ -1,5 +1,5 @@
 const Post = require("../models/post.model");
-const uploadFile = require("../services/storage.service");
+const {uploadFile, imagekit} = require("../services/storage.service");
 
 const createPost = async (req, res) => {
 
@@ -9,7 +9,8 @@ const createPost = async (req, res) => {
 
         const post = await Post.create({
             caption: req.body.caption,
-            image: result.url
+            image: result.url,
+            imageFileId: result.fileId
         });
 
         res.status(201).json({
@@ -84,9 +85,23 @@ const updatePost = async (req, res) => {
             post.caption = req.body.caption;
         }
 
-        if(req.file) {
+        if (req.file) {
+
+            const oldFileId = post.imageFileId;
+
             const uploadedImage = await uploadFile(req.file);
+
             post.image = uploadedImage.url;
+            post.imageFileId = uploadedImage.fileId;
+
+            await post.save();
+
+            if (oldFileId) {
+                await imagekit.files.delete(oldFileId);
+            }
+
+        } else {
+            await post.save();
         }
 
         await post.save();
@@ -117,8 +132,10 @@ const deletePost = async (req, res) => {
                 message: "Post not found"
             });
         }
+        
+        await imagekit.files.delete(post.imageFileId);
 
-        await post.deleteOne();
+        await Post.findByIdAndDelete(req.params.id);
         
         res.status(200).json({
             success: true,

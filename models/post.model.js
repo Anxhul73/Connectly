@@ -5,6 +5,11 @@ const postSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    
+    imageFileId: {
+        type: String,
+        required: true
+    },
 
     caption: {
         type: String,
