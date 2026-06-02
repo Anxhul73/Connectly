@@ -4,13 +4,16 @@ const {uploadFile, imagekit} = require("../services/storage.service");
 const createPost = async (req, res) => {
 
     try {
-
+        // console.log(req.headers["content-type"]);
+        // console.log("FILE:", req.file);
+        // console.log("BODY:", req.body);
         const result = await uploadFile(req.file);
 
         const post = await Post.create({
             caption: req.body.caption,
             image: result.url,
-            imageFileId: result.fileId
+            imageFileId: result.fileId,
+            user: req.user.id
         });
 
         res.status(201).json({
@@ -29,9 +32,9 @@ const createPost = async (req, res) => {
 
 const getAllPosts = async(req,res) => {
     try {
-        const posts = await Post.find().sort({
-            createdAt: -1
-        });
+        const posts = await Post.find()
+            .populate("user", "username")
+            .sort({ createdAt: -1 });
 
         res.status(200).json({
             success: true,
@@ -47,7 +50,9 @@ const getAllPosts = async(req,res) => {
 }
 const getPostById = async(req,res) => {
     try {
-        const post = await Post.findById(req.params.id);
+        const post = await Post.find()
+        .populate("user", "username")
+        .sort({ createdAt: -1 });
 
         if(!post){
             return res.status(404).json({
@@ -72,13 +77,26 @@ const getPostById = async(req,res) => {
 const updatePost = async (req, res) => {
     try {
 
+        // console.log(req.user);
+        
+
         const post = await Post.findById(req.params.id);
 
+        // console.log("Logged User:", req.user.id);
+        // console.log("Post User:", post.user?.toString());
+
         if(!post) {
-            res.status(404).json({
+           return res.status(404).json({
                 success: false, 
                 message: "Post not found"
             })
+        }
+
+        if(post.user.toString() !== req.user.id) {
+            return res.status(403).json({
+                success: false,
+                message: "Not Authorized"
+            });
         }
 
         if(req.body.caption) {
@@ -93,15 +111,10 @@ const updatePost = async (req, res) => {
 
             post.image = uploadedImage.url;
             post.imageFileId = uploadedImage.fileId;
-
-            await post.save();
-
+            
             if (oldFileId) {
                 await imagekit.files.delete(oldFileId);
-            }
-
-        } else {
-            await post.save();
+            };
         }
 
         await post.save();
@@ -127,9 +140,16 @@ const deletePost = async (req, res) => {
         const post = await Post.findById(req.params.id);
         
         if(!post) {
-            res.status(404).json({
+           return res.status(404).json({
                 success: false, 
                 message: "Post not found"
+            });
+        }
+
+        if(post.user.toString() !== req.user.id) {
+            return res.status(403).json({
+                success: false,
+                message: "Not Authorized"
             });
         }
         

@@ -8,13 +8,13 @@ const upload = multer({
         fileSize: 5 * 1024 * 1024
     },
     fileFilter: (req, file, cb) => {
+        // console.log("FILE RECEIVED:", file);
 
-        if(file.mimetype.startsWith("image")) {
-            cb(null, true);
-        } else {
-            cb(new Error("Only images allowed"));
-        }
+    if (file.mimetype.startsWith("image")) {
+        cb(null, true);
+    } else {
+        cb(new Error("Only images allowed"));
     }
-});
-
+}}
+)
 module.exports = upload;

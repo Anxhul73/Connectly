@@ -7,7 +7,7 @@ const register = async (req,res) => {
 
         const { username, email, password } = req.body;
 
-        console.log(User);
+        // console.log(User);
         
 
         const existingUser = await User.findOne({
@@ -20,7 +20,7 @@ const register = async (req,res) => {
         if(existingUser) {
             return res.status(400).json({
                 success: false,
-                message: "user alreday exists!"
+                message: "User already exists!"
             });
         }
         
@@ -50,7 +50,7 @@ const register = async (req,res) => {
 
 const logIn = async (req, res) => {
     try {
-        console.log(req.body);
+        // console.log(req.body);
         
         let { email, password } = req.body;
 
@@ -85,6 +85,8 @@ const logIn = async (req, res) => {
             });
         }
 
+        // console.log("LOGIN SECRET:", process.env.JWT_SECRET);
+        
         const token = jwt.sign(
             {
                 id: user.id
