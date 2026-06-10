@@ -1,4 +1,4 @@
-const { NotFoundError } = require("@imagekit/nodejs");
+const { ImageKit } = require("@imagekit/nodejs");
 const Comment = require("../models/comment.model");
 const Post = require("../models/post.model");
 
@@ -143,7 +143,6 @@ const deleteComment = async ( req, res ) => {
                 message: "Not authorized"
             })
         }
-
         await Comment.findByIdAndDelete( req.params.commentId );
 
         return res.status(200).json({
@@ -153,7 +152,7 @@ const deleteComment = async ( req, res ) => {
 
     } catch ( error ) {
         return res.status(500).json({
-            success: true,
+            success: false,
             message: "Server error."
         });
     }

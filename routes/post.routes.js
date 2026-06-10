@@ -5,7 +5,8 @@ const upload = require("../middlewares/upload.middleware");
 // console.log(upload);
 
 const {
-    createPost, getAllPosts, getPostById, updatePost, deletePost
+    createPost, getAllPosts, getPostById, updatePost, deletePost, toggleLike,
+    getLikes, 
 } = require("../controllers/post.controller");
 const protect = require("../middlewares/auth.middleware");
 
@@ -35,6 +36,18 @@ router.delete(
   "/:id",
   protect,
   deletePost
+  )
+
+
+  router.post(
+    "/:id/like",
+    protect,
+    toggleLike,
+  )
+
+  router.get(
+    "/:id/likes",
+    getLikes
   )
 
 

@@ -169,10 +169,79 @@ const deletePost = async (req, res) => {
     }
 }  
 
+const toggleLike = async ( req, res ) => {
+    try{ 
+
+        const post = await Post.findById(req.params.id);
+
+        if(!post) {
+            return res.status(404).json({
+                success: false,
+                message: "Post not found"
+            });
+        }
+
+        const alreadyLiked = post.likes.some(
+            like => like.toString() === req.user.id
+        );
+
+        if(alreadyLiked) {
+            post.likes = post.likes.filter(
+                likes => likes.toString() !== req.user.id 
+            );
+        } else {
+            post.likes.push(req.user.id);
+        }
+
+        await post.save();
+
+        return res.status(200).json({
+            success: true,
+            liked: !alreadyLiked,
+            likesCount: post.likes.length
+        });
+        
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Server error"
+        });
+    }
+}
+
+const getLikes = async ( req, res ) => {
+    try {
+
+        const post = await Post.findById(req.params.id)
+            .populate("likes", "username");
+
+        if (!post) {
+            return res.status(404).json({
+                success: false,
+                message: "Post not found"
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            count: post.likes.length,
+            users: post.likes
+        });
+
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Server error"
+        });
+    }
+}
+
 module.exports = {
     createPost,
     getAllPosts,
     getPostById,
     updatePost,
-    deletePost
+    deletePost,
+    toggleLike,
+    getLikes,
 };
