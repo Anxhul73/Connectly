@@ -4,6 +4,7 @@ const router = express.Router();
 const protect = require("../middlewares/auth.middleware");
 
 const { getUserProfile, getCurrentUser, followUser, getFollowers, getFollowing, } = require("../controllers/user.controller");
+const { getFeed, getSuggestions } = require("../controllers/feed.controller");
 
 
 router.get(
@@ -12,10 +13,16 @@ router.get(
     getCurrentUser,
 );
 
+router.get(
+    "/feed",
+    protect,
+    getFeed
+);
 
 router.get(
-    "/:id", 
-    getUserProfile
+    "/suggestions",
+    protect,
+    getSuggestions
 );
 
 router.post(
@@ -34,6 +41,11 @@ router.get(
     "/:id/following",
     protect,
     getFollowing
+);
+
+router.get(
+    "/:id", 
+    getUserProfile
 );
 
 module.exports = router;
