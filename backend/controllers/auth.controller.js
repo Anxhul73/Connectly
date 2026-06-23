@@ -23,6 +23,12 @@ const register = async (req,res) => {
                 message: "User already exists!"
             });
         }
+        if (!username || !email || !password) {
+            return res.status(400).json({
+                success: false,
+                message: "All fields are required"
+            });
+        }
         
         const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -32,10 +38,26 @@ const register = async (req,res) => {
             password : hashedPassword
         });
 
+        const token = jwt.sign(
+            {
+                id: user.id
+            },
+            process.env.JWT_SECRET, 
+            {
+                expiresIn: process.env.JWT_EXPIRES_IN
+            }
+        );
+        const userResponse = {
+                id: user.id,
+                username: user.username,
+                email: user.email
+            }
+
         res.status(201).json({
             success: true,
             message: "You've registered successfully!",
-            user
+            token,
+            user: userResponse
         });
 
     } catch(error){
@@ -97,15 +119,17 @@ const logIn = async (req, res) => {
             }
         );
 
-        res.status(200).json({
-            success: true,
-            message: "Login Successful",
-            token,
-            user: {
+        const userResponse = {
                 id: user.id,
                 username: user.username,
                 email: user.email
             }
+
+        res.status(200).json({
+            success: true,
+            message: "Login Successful",
+            token,
+            user: userResponse
         });
     } catch (error) {
         console.log(error);
