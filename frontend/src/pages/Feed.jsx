@@ -2,7 +2,6 @@ import { useNavigate } from "react-router-dom";
 import api from "../services/axios";
 import { useEffect, useState } from "react";
 
-// import Navbar from "../components/Navbar";
 import PostList from "../components/PostList";
 import Loader from "../components/Loader";
 import Sidebar from "../components/Sidebar";
@@ -11,7 +10,7 @@ function Feed() {
   const navigate = useNavigate();
 
   const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const handleLogout = () => {
@@ -27,8 +26,6 @@ function Feed() {
     try {
       setLoading(true);
 
-      await new Promise((resolve) => setTimeout(resolve, 3000));
-
       const res = await api.get("/users/feed");
 
       setPosts(res.data.posts);
@@ -42,8 +39,6 @@ function Feed() {
   useEffect(() => {
     getPosts();
   }, []);
-
-  console.log(posts);
 
   if (loading) {
     return (
@@ -123,23 +118,26 @@ function Feed() {
   }
 
   return (
-    <div className="min-h-screen bg-zinc-950 border-2 border-zinc-600 flex">
-      {/* <Navbar handleLogout={handleLogout} /> */}
+    <>
+      <div className="min-h-screen bg-zinc-950 border-2 border-zinc-600 flex">
       <Sidebar handleLogout={handleLogout} />
 
       <div
         className=" 
-            flex-1
-            flex
-            flex-col
-            items-center                                 
-            px-4 
-            mt-6
+          flex
+          flex-1
+          flex-col
+          justify-center
+          items-center                            
+          px-4 
+          mt-6
+          gap-8
         "
       >
         <PostList posts={posts} />
       </div>
     </div>
+    </>
   );
 }
 
