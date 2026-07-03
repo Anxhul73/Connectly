@@ -1,19 +1,23 @@
 const mongoose = require("mongoose");
 
 const postSchema = new mongoose.Schema({
-    image: {
-        type: String,
-        required: true
-    },
-    
-    imageFileId: {
-        type: String,
-        required: true
-    },
+    images: [
+        {
+            url: {
+                type: String,
+                required: true
+            },
+
+            fileId: {
+                type: String,
+                required: true
+            },
+        }
+    ],
 
     caption: {
         type: String,
-        required: true
+        default: ""
     },
 
     user: {

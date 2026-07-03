@@ -17,7 +17,7 @@ router.post(
       next();
   },
   protect,
-  upload.single("image"),
+  upload.array("images", 10),
   createPost
 );
 
@@ -28,7 +28,7 @@ router.get("/:id", getPostById);
 router.put(
   "/:id", 
   protect,
-  upload.single("image"),
+  upload.array("images", 10),
   updatePost
   )
 

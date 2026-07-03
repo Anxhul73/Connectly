@@ -1,0 +1,144 @@
+Connectly – Project Context Handoff
+Project
+
+Connectly – MERN Social Media Platform
+
+Tech Stack
+Frontend: React.js, Tailwind CSS
+Backend: Node.js, Express.js
+Database: MongoDB Atlas + Mongoose
+Authentication: JWT
+File Storage: ImageKit
+State Management: React Context API (Redux may be added later)
+Features Implemented
+Authentication
+User Signup
+User Login
+JWT Authentication
+Protected Routes middleware
+Get Current User endpoint
+Posts
+Create Post
+Get All Posts
+Get Single Post
+Update Post
+Delete Post
+Image Upload using ImageKit
+Social Features
+Like/Unlike Posts
+Follow/Unfollow Users
+User Feed
+Suggested Users
+Comments
+Create Comment
+Fetch Comments
+Backend Structure
+backend/
+├── controllers/
+├── middlewares/
+├── models/
+├── routes/
+├── services/
+├── src/
+├── .env
+├── package.json
+Frontend Status
+
+Recently working on:
+
+Create Post Page
+Upload image
+Add caption
+Connect with backend API
+Loading state
+Error handling
+UI Changes
+Modern social media app design
+Sidebar component
+Loader component
+Premium looking interface
+Security Incident (Important)
+
+Accidentally pushed .env to a public GitHub repository.
+
+Exposed:
+
+MongoDB credentials
+ImageKit keys
+JWT Secret
+
+Actions taken:
+
+✅ Repository made private
+✅ Regained MongoDB Atlas access through password reset
+✅ Rotated ImageKit keys
+✅ Removed .env from tracking
+✅ Removed .env from Git history using:
+
+git filter-repo --path backend/.env --invert-paths
+git push origin --force --all
+git push origin --force --tags
+
+Verification:
+
+git log --all -- backend/.env
+
+returns nothing.
+
+GitHub code search no longer shows .env.
+
+Remaining Security Tasks
+MongoDB
+Create a new DB user or change password.
+Update MONGO_URI.
+JWT
+
+Generate new secret:
+
+node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
+
+Update:
+
+JWT_SECRET=<new_secret>
+Development Folder
+
+Continue development using:
+
+Connectly/
+
+Keep:
+
+Post Project Backup/
+
+only as a temporary backup.
+
+Do NOT copy:
+
+.git
+.env
+node_modules
+Current Git State
+
+Repository history is clean.
+
+.env is ignored:
+
+.env
+.env.*
+node_modules
+Next Development Tasks
+Verify MongoDB connection with new credentials.
+Verify ImageKit uploads.
+Continue Create Post frontend integration.
+Test:
+Auth
+Posts
+Likes
+Comments
+Follow system
+Resume feature development.
+User Preferences
+Prefers step-by-step explanations.
+Learning MERN deeply while building projects.
+Wants production-ready practices and clean architecture.
+Uses VS Code and GitHub extensively.

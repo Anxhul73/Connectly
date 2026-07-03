@@ -1,5 +1,5 @@
 const Post = require("../models/post.model");
-const {uploadFile, imagekit} = require("../services/storage.service");
+const {uploadFile, deleteFile} = require("../services/storage.service");
 
 const createPost = async (req, res) => {
 
@@ -7,12 +7,37 @@ const createPost = async (req, res) => {
         // console.log(req.headers["content-type"]);
         // console.log("FILE:", req.file);
         // console.log("BODY:", req.body);
-        const result = await uploadFile(req.file);
+
+        
+        if(!req.files || req.files.length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: "No image attached"
+            })
+        }
+
+        if(req.files.length > 10) {
+            return res.status(400).json({
+                success: false,
+                message: "Can't upload more than 10 images"
+            })
+        }
+
+        const uploadedImages = await Promise.all(
+            req.files.map(async (file) => {
+                const result = await uploadFile(file);
+
+                return {
+                    url: result.url,
+                    fileId: result.fileId,
+                }
+
+            })
+        ) 
 
         const post = await Post.create({
+            images: uploadedImages,
             caption: req.body.caption,
-            image: result.url,
-            imageFileId: result.fileId,
             user: req.user.id
         });
 
@@ -50,7 +75,7 @@ const getAllPosts = async(req,res) => {
 }
 const getPostById = async(req,res) => {
     try {
-        const post = await Post.find()
+        const post = await Post.findById(req.params.id)
         .populate("user", "username")
         .sort({ createdAt: -1 });
 
@@ -78,8 +103,6 @@ const updatePost = async (req, res) => {
     try {
 
         // console.log(req.user);
-        
-
         const post = await Post.findById(req.params.id);
 
         // console.log("Logged User:", req.user.id);
@@ -99,22 +122,27 @@ const updatePost = async (req, res) => {
             });
         }
 
-        if(req.body.caption) {
-            post.caption = req.body.caption;
+        if (req.body.caption !== undefined) {
+          post.caption = req.body.caption;
         }
 
-        if (req.file) {
+        if (req.files && req.files.length > 0) {
+          const uploadedImages = await Promise.all(
+            req.files.map(async (file) => {
+              const result = await uploadFile(file);
 
-            const oldFileId = post.imageFileId;
+              return {
+                url: result.url,
+                fileId: result.fileId,
+              };
+            }),
+          );
 
-            const uploadedImage = await uploadFile(req.file);
+          await Promise.all(
+            post.images.map((image) => deleteFile(image.fileId)),
+          );
 
-            post.image = uploadedImage.url;
-            post.imageFileId = uploadedImage.fileId;
-            
-            if (oldFileId) {
-                await imagekit.files.delete(oldFileId);
-            };
+          post.images = uploadedImages;
         }
 
         await post.save();
@@ -153,7 +181,9 @@ const deletePost = async (req, res) => {
             });
         }
         
-        await imagekit.files.delete(post.imageFileId);
+        await Promise.all(
+            post.images.map(async (image) => deleteFile(image.fileId))
+        );
 
         await Post.findByIdAndDelete(req.params.id);
         
@@ -167,10 +197,19 @@ const deletePost = async (req, res) => {
             message: error.message
         })
     }
-}  
+}
 
 const toggleLike = async ( req, res ) => {
     try{ 
+
+        const mongoose = require("mongoose");
+
+        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+          return res.status(404).json({
+            success: false,
+            message: "Post not found",
+          });
+        }
 
         const post = await Post.findById(req.params.id);
 

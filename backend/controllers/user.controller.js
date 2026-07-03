@@ -1,5 +1,6 @@
 const User = require("../models/user.model");
 const Post = require("../models/post.model");
+const mongoose = require("mongoose");
 
 const getUserProfile = async (req, res) => {
     try {
@@ -71,6 +72,14 @@ const getCurrentUser = async (req, res) => {
 
 const followUser = async (req, res) => {
     try {
+
+        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid user id"
+            });
+        }
+
         const currentUser = await User.findById(req.user.id);
 
         const targetUser = await User.findById(req.params.id);
@@ -120,7 +129,7 @@ const followUser = async (req, res) => {
     } catch (error) {
         return res.status(500).json({
             success: false,
-            message: "Server error"
+            message: error.message
         });
     }
 };

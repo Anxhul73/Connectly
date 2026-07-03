@@ -12,12 +12,12 @@ const getFeed = async (req, res) => {
         });
       }
 
+    const feedUsers = [...currentUser.following, currentUser._id];
+
     const posts = await Post.find({
-      user: {
-        $in: currentUser.following,
-      },
+      user: { $in: feedUsers },
     })
-      .populate("user", "username")
+      .populate("user", "username profilePic")
       .sort({ createdAt: -1 });
 
     return res.status(200).json({

@@ -116,26 +116,19 @@ function Feed() {
       </>
     );
   }
+  console.log(posts);
+  
 
   return (
     <>
       <div className="min-h-screen bg-zinc-950 border-2 border-zinc-600 flex">
       <Sidebar handleLogout={handleLogout} />
 
-      <div
-        className=" 
-          flex
-          flex-1
-          flex-col
-          justify-center
-          items-center                            
-          px-4 
-          mt-6
-          gap-8
-        "
-      >
-        <PostList posts={posts} />
-      </div>
+      <main className="flex-1 flex justify-center px-4 my-6 gap-8 overflow-y-auto">
+        <div className="w-full max-w-2xl  py-6">
+          <PostList posts={posts} setPosts={setPosts} />
+        </div>
+      </main>
     </div>
     </>
   );

@@ -120,10 +120,13 @@ const logIn = async (req, res) => {
         );
 
         const userResponse = {
-                id: user.id,
-                username: user.username,
-                email: user.email
-            }
+          _id: user._id,
+          username: user.username,
+          email: user.email,
+          following: user.following,
+          followers: user.followers,
+          profilePic: user.profilePic,
+        };
 
         res.status(200).json({
             success: true,

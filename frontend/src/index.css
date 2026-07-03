@@ -141,3 +141,26 @@ body {
     @apply font-sans;
   }
 }
+
+.swiper-pagination {
+  bottom: 20px !important;
+}
+.swiper-pagination-bullet-active {
+  background: #25272b !important;
+}
+
+.post-swiper .swiper-button-next,
+.post-swiper .swiper-button-prev {
+   color: white !important;
+  background: rgba(24, 24, 27, 0.8);
+  width: 24px !important;
+  height: 18px !important;
+  border-radius: 9999px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.post-swiper:hover .swiper-button-next,
+.post-swiper:hover .swiper-button-prev {
+  opacity: 1;
+}
