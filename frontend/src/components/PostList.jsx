@@ -7,9 +7,36 @@ import {
   FaEllipsisH, 
 } from "react-icons/fa";
 import api from "../services/axios";
-import{ useState } from "react";
+import{ useState, useEffect, useRef } from "react";
 
 function PostList({ posts, setPosts }) {
+
+  const [openMenu, setOpenMenu] = useState(null);
+
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if(
+        menuRef.current && 
+        !menuRef.current.contains(e.target) 
+      ) {
+        setOpenMenu(null);
+      }
+    }
+
+    document.addEventListener(
+      "mousedown",
+      handleClickOutside
+    );
+
+    return () => {
+      document.removeEventListener(
+        "mousedown",
+        handleClickOutside
+      );
+    }
+  }, []);
 
   const currentUser = JSON.parse(
     localStorage.getItem("user")
@@ -67,18 +94,37 @@ const handleFollow = async (userId) => {
       setFollowingIds((prev) => 
         prev.filter((id) => id !== userId )
       );
-    }
-
-    // setPosts((prevPosts) => 
-    //   prevPosts.map((post) => {
-    //     if(post.user._id  !== userId) return post;
-
-    //     return post;
-    //   })
-    // );
+    }  
   } catch (error) {
     console.log(error);
         
+  }
+}
+
+const handleDelete = async (postId) => {
+  try {
+    await api.delete(`/posts/${postId}`);
+
+    setPosts((prev) => 
+      prev.filter((post) => post._id !== postId) 
+    );
+    setOpenMenu(null);
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+const handleCopyLink = async (postId) => {
+  try {
+    const link = `${window.location.origin}/posts/${postId}`;
+
+    await navigator.clipboard.writeText(link);
+    alert("Link Copied!")
+    setOpenMenu(null);
+
+  } catch (error) {
+    console.log(error);
+    
   }
 }
 
@@ -173,7 +219,13 @@ const handleFollow = async (userId) => {
 
               </div>
 
-              <FaEllipsisH
+              <div className="relative">
+                <FaEllipsisH
+                onClick={() => 
+                  setOpenMenu(
+                    openMenu === post._id ? null : post._id
+                  )
+                }
                 className="
                   text-zinc-500
                   cursor-pointer
@@ -182,6 +234,90 @@ const handleFollow = async (userId) => {
                 "
               />
 
+              {openMenu === post._id && (
+                <div
+                  ref={menuRef}
+                  onClick={(e) => e.stopPropagation()}
+                  className="
+                    absolute
+                    right-2
+                    top-8
+                    w-44
+                    max-w-60
+                    overflow-hidden
+                    rounded-2xl
+                    bg-zinc-900/60
+                    backdrop-blur-2xl
+                    border border-white/10
+                    shadow-2xl shadow-black/40
+                    z-50
+                    transition-all duration-200 ease-in
+                    animate-in fade-in zoom-in-95
+                  "
+                >
+                  {isOwnPost && (
+                    <button
+                      onClick={ () => {
+                        const confirmDelete = window.confirm(
+                          "Delete this Post?"
+                        );
+
+                        if(confirmDelete) {
+                          handleDelete(post._id);
+                        }
+                      }}
+
+                      className="
+                        w-full
+                        text-center
+                        px-4
+                        py-3
+                        text-red-500
+                        font-medium
+                        hover:bg-red-500/20
+                        transition
+                      "
+                    >
+                      Delete Post
+                    </button>
+                  )}
+                  <div className="h-px bg-white/10" />
+
+                  <button
+                  onClick={() => handleCopyLink(post._id)}
+                    className="
+                      w-full
+                      text-center
+                      px-4
+                      py-3
+                      text-zinc-300
+                      hover:bg-zinc-800
+                      transition
+                    "
+                  >
+                    Copy Link
+                  </button>
+                  <div className="h-px bg-white/10" />
+
+                  <button
+                    className="
+                      w-full
+                      text-center
+                      px-4
+                      py-3
+                      text-zinc-300
+                      hover:bg-zinc-800
+                      transition
+                    "
+                  > 
+                    Cancel
+                  </button>
+
+                </div>
+              )}
+
+
+              </div>
               {/* <button
                 className="
                   text-zinc-500

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 import PostList from "../components/PostList";
 import Loader from "../components/Loader";
-import Sidebar from "../components/Sidebar";
+import Sidebar from "../components/Sidebar/Sidebar";
 
 function Feed() {
   const navigate = useNavigate();
@@ -121,10 +121,10 @@ function Feed() {
 
   return (
     <>
-      <div className="min-h-screen bg-zinc-950 border-2 border-zinc-600 flex">
+      <div className="min-h-screen bg-zinc-950">
       <Sidebar handleLogout={handleLogout} />
 
-      <main className="flex-1 flex justify-center px-4 my-6 gap-8 overflow-y-auto">
+      <main className="min-h-screen flex-1 flex justify-center px-4 pl-24 md:pl-0 my-6 ">
         <div className="w-full max-w-2xl  py-6">
           <PostList posts={posts} setPosts={setPosts} />
         </div>

@@ -6,6 +6,7 @@ import Feed from "./pages/Feed";
 import Profile from "./pages/Profile";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import CreatePost from "./pages/CreatePost";
+import Post from "./components/Post"
 
 function App() {
   return (
@@ -47,6 +48,11 @@ function App() {
           </ProtectedRoute>
         }
         />
+
+      <Route 
+        path = "/posts/:id"
+        element = {<Post />}
+      />
     </Routes>
     
   );
