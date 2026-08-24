@@ -64,7 +64,7 @@ function CreatePost() {
           setCaption("");
 
           await new Promise(resolve => 
-            setTimeout(resolve, 2000)
+            setTimeout(resolve, 3000)
           );
 
           // Redirect to Feed

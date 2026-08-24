@@ -82,11 +82,8 @@ useEffect(() => {
       onMouseLeave={handleMouseLeave}
       className={`
         fixed
-        top-4
-        left-4
-        h-[calc(100vh_-_2rem)]
+        h-full
         ${expanded ? "w-58" : "w-14"}
-        rounded-3xl
         bg-zinc-900/45
         backdrop-blur-2xl
         border
@@ -112,7 +109,6 @@ useEffect(() => {
         px-4
         pt-7
         pb-6
-        gap-4
         overflow-hidden
         shrink-0
     "
